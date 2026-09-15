@@ -1,425 +1,364 @@
-/* ===================================================== ДАННЫЕ НАШЕГО ПРИЛОЖЕНИЯ
-Здесь мы храним все категории и средства.
-Название слева — внутреннее название категории. Справа — название, которое увидит пользователь. */
+/* =====================================================
+   ДАННЫЕ ПРИЛОЖЕНИЯ
+===================================================== */
+
 const products = {
-dish: {
-    name: "Посуда",
 
-    items: [
-        'Гель "Лимон"',
-        'Гель-бальзам "Гранат-абрикос"',
-        "Детская посуда"
-    ]
-},
+    dish: {
+        name: "Посуда",
+        items: [
+            'Гель "Лимон"',
+            'Гель-бальзам "Гранат-абрикос"',
+            "Детская посуда"
+        ]
+    },
 
+    laundry: {
+        name: "Стирка",
+        items: [
+            "2 в 1",
+            "Универсальный",
+            "Joy / Радость",
+            "Детский кондиционер"
+        ]
+    },
 
-laundry: {
-    name: "Стирка",
+    floor: {
+        name: "Пол",
+        items: [
+            "Средство для пола"
+        ]
+    },
 
-    items: [
-        "2 в 1",
-        "Универсальный",
-        "Joy / Радость",
-        "Детский кондиционер"
-    ]
-},
+    soap: {
+        name: "Мыло",
+        items: [
+            "Вишня",
+            "Миндальное молочко",
+            "Лавандовое поле"
+        ]
+    },
 
+    shower: {
+        name: "Гель для душа",
+        items: [
+            "Пачули и бергамот",
+            "Сандал и можжевельник",
+            "Инжир и лотос",
+            "Карамельное яблоко и ваниль",
+            "Кофе и зеленый лайм"
+        ]
+    },
 
-floor: {
-    name: "Пол",
+    shampoo: {
+        name: "Шампунь",
+        items: [
+            "Питание и восстановление",
+            "Увлажнение и блеск",
+            "Объем и укрепление",
+            "Мужской 2в1"
+        ]
+    }
 
-    items: [
-        "Средство для пола"
-    ]
-},
-
-
-soap: {
-    name: "Мыло",
-
-    items: [
-        "Вишня",
-        "Миндальное молочко",
-        "Лавандовое поле"
-    ]
-},
-
-
-shower: {
-    name: "Гель для душа",
-
-    items: [
-        "Пачули и бергамот",
-        "Сандал и можжевельник",
-        "Инжир и лотос",
-        "Карамельное яблоко и ваниль",
-        "Кофе и зеленый лайм"
-    ]
-},
-
-
-shampoo: {
-    name: "Шампунь",
-
-    items: [
-        "Питание и восстановление",
-        "Увлажнение и блеск",
-        "Объем и укрепление",
-        "Мужской 2в1"
-    ]
-}
 };
-/* ===================================================== ПЕРЕМЕННЫЕ ===================================================== */
-/* Здесь мы будем временно хранить:
-какую категорию выбрали;
-какое средство выбрали. */
-let selectedCategory = null; let selectedProduct = null;
-/* ===================================================== ПОЛУЧАЕМ СОХРАНЁННЫЕ ЗАПИСИ ===================================================== */
-/* localStorage — встроенное хранилище браузера.
-Благодаря ему записи не исчезнут, если закрыть браузер или приложение.
-Если записей ещё нет — используем пустой массив []. */
-let notes = JSON.parse( localStorage.getItem("refillNotes") ) || [];
-/* ===================================================== ПОКАЗЫВАЕМ КАТЕГОРИИ ===================================================== */
+
+
+/* =====================================================
+   ПЕРЕМЕННЫЕ
+===================================================== */
+
+let selectedCategory = null;
+let selectedProduct = null;
+
+
+/* =====================================================
+   СОХРАНЁННЫЕ ЗАПИСИ
+===================================================== */
+
+let notes = JSON.parse(
+    localStorage.getItem("refillNotes")
+) || [];
+
+
+/* =====================================================
+   ПОКАЗЫВАЕМ КАТЕГОРИИ
+===================================================== */
+
 function renderCategories() {
-// Находим контейнер категорий
-const container = document.getElementById("categories");
 
-// Очищаем его
-container.innerHTML = "";
+    const container = document.getElementById("categories");
+
+    container.innerHTML = "";
+
+    Object.entries(products).forEach(
+        ([key, category]) => {
+
+            const button = document.createElement("button");
+
+            button.className = "category-button";
+
+            button.textContent = category.name;
+
+            button.onclick = function () {
+                showProducts(key);
+            };
+
+            container.appendChild(button);
+
+        }
+    );
+}
 
 
-/*
-   Object.entries превращает наш объект products
-   в список пар:
+/* =====================================================
+   ОТКРЫВАЕМ СПИСОК СРЕДСТВ
+===================================================== */
 
-   dish → Посуда
-   laundry → Стирка
-   и т.д.
-*/
+function showProducts(categoryKey) {
 
-Object.entries(products).forEach(
-    ([key, category]) => {
+    selectedCategory = categoryKey;
 
-        // Создаём кнопку
+    const category = products[categoryKey];
+
+    document.getElementById(
+        "categoryTitle"
+    ).textContent = category.name;
+
+    const container = document.getElementById("products");
+
+    container.innerHTML = "";
+
+    category.items.forEach(productName => {
+
         const button = document.createElement("button");
 
-        // Добавляем CSS-класс
-        button.className = "category-button";
+        button.className = "product-button";
 
-        // Пишем название категории
-        button.textContent = category.name;
-
-
-        /*
-           При нажатии вызываем функцию
-           выбора категории.
-        */
+        button.textContent = productName;
 
         button.onclick = function () {
-
-            showProducts(key);
-
+            selectProduct(productName);
         };
 
-
-        // Добавляем кнопку на страницу
         container.appendChild(button);
 
-    }
-);
+    });
+
+    document
+        .getElementById("categoriesScreen")
+        .classList.add("hidden");
+
+    document
+        .getElementById("productsScreen")
+        .classList.remove("hidden");
 }
-/* ===================================================== ОТКРЫВАЕМ СПИСОК СРЕДСТВ ===================================================== */
-function showProducts(categoryKey) {
-// Запоминаем выбранную категорию
-selectedCategory = categoryKey;
 
 
-// Получаем данные категории
-const category = products[categoryKey];
+/* =====================================================
+   ВЫБИРАЕМ СРЕДСТВО
+===================================================== */
+
+function selectProduct(productName) {
+
+    selectedProduct = productName;
+
+    document.getElementById(
+        "productTitle"
+    ).textContent = productName;
+
+    document.getElementById(
+        "amountInput"
+    ).value = "";
+
+    document
+        .getElementById("productsScreen")
+        .classList.add("hidden");
+
+    document
+        .getElementById("amountScreen")
+        .classList.remove("hidden");
+
+    document
+        .getElementById("amountInput")
+        .focus();
+}
 
 
-// Меняем заголовок
-document.getElementById(
-    "categoryTitle"
-).textContent = category.name;
+/* =====================================================
+   БЫСТРАЯ КНОПКА КОЛИЧЕСТВА
+===================================================== */
+
+function setAmount(amount) {
+
+    document.getElementById(
+        "amountInput"
+    ).value = amount;
+
+}
 
 
-// Получаем контейнер средств
-const container = document.getElementById("products");
+/* =====================================================
+   СОХРАНЕНИЕ ЗАПИСИ
+===================================================== */
 
+function saveNote() {
 
-// Очищаем предыдущие средства
-container.innerHTML = "";
+    const amount = Number(
+        document.getElementById("amountInput").value
+    );
 
+    if (!amount || amount <= 0) {
 
-// Создаём кнопку для каждого средства
-category.items.forEach(productName => {
+        alert("Введите количество в граммах");
 
-    const button = document.createElement("button");
+        return;
+    }
 
-    button.className = "product-button";
+    const newNote = {
 
-    button.textContent = productName;
+        id: Date.now(),
 
+        category: selectedCategory,
 
-    // При нажатии выбираем средство
-    button.onclick = function () {
+        product: selectedProduct,
 
-        selectProduct(productName);
+        amount: amount
 
     };
 
+    notes.push(newNote);
 
-    container.appendChild(button);
+    localStorage.setItem(
+        "refillNotes",
+        JSON.stringify(notes)
+    );
 
-});
+    renderNotes();
 
+    showCategories();
 
-// Показываем экран средств
-document
-    .getElementById("categoriesScreen")
-    .classList.add("hidden");
-
-document
-    .getElementById("productsScreen")
-    .classList.remove("hidden");
-}
-/* ===================================================== ВЫБИРАЕМ СРЕДСТВО ===================================================== */
-function selectProduct(productName) {
-    // Запоминаем выбранное средство
-selectedProduct = productName;
-
-
-// Показываем его название
-document.getElementById(
-    "productTitle"
-).textContent = productName;
-
-
-// Очищаем поле количества
-document.getElementById(
-    "amountInput"
-).value = "";
-
-
-// Переходим к экрану количества
-
-document
-    .getElementById("productsScreen")
-    .classList.add("hidden");
-
-document
-    .getElementById("amountScreen")
-    .classList.remove("hidden");
-
-
-// Сразу ставим курсор в поле
-document
-    .getElementById("amountInput")
-    .focus();
-}
-/* ===================================================== БЫСТРАЯ КНОПКА КОЛИЧЕСТВА ===================================================== */
-function setAmount(amount) {
-document.getElementById(
-    "amountInput"
-).value = amount;
-}
-/* ===================================================== СОХРАНЕНИЕ ЗАПИСИ ===================================================== */
-function saveNote() {
-// Получаем количество
-const amount = Number(
-    document.getElementById("amountInput").value
-);
-
-
-/*
-   Проверяем, ввёл ли пользователь количество.
-*/
-
-if (!amount || amount <= 0) {
-
-    alert("Введите количество в граммах");
-
-    return;
+    selectedCategory = null;
+    selectedProduct = null;
 }
 
 
-/*
-   Создаём новую запись.
-*/
+/* =====================================================
+   ПОКАЗЫВАЕМ СОХРАНЁННЫЕ ЗАПИСИ
+===================================================== */
 
-const newNote = {
-
-    // Уникальный ID записи
-    id: Date.now(),
-
-    // Например: dish
-    category: selectedCategory,
-
-    // Например: Гель "Лимон"
-    product: selectedProduct,
-
-    // Например: 750
-    amount: amount
-
-};
-
-
-// Добавляем запись в массив
-notes.push(newNote);
-
-
-// Сохраняем массив в памяти браузера
-localStorage.setItem(
-    "refillNotes",
-    JSON.stringify(notes)
-);
-
-
-// Обновляем список карточек
-renderNotes();
-
-
-// Возвращаемся на главный экран
-showCategories();
-
-
-// Очищаем выбранные значения
-selectedCategory = null;
-selectedProduct = null;
-}
-/* ===================================================== ПОКАЗ СОХРАНЁННЫХ ЗАПИСЕЙ ===================================================== */
 function renderNotes() {
-const container =
-    document.getElementById("notes");
 
+    const container =
+        document.getElementById("notes");
 
-// Очищаем старые карточки
-container.innerHTML = "";
+    container.innerHTML = "";
 
+    if (notes.length === 0) {
 
-/*
-   Если записей нет,
-   показываем соответствующее сообщение.
-*/
+        container.innerHTML =
+            '<p style="color:#888;">Нет текущих записей</p>';
 
-if (notes.length === 0) {
+        return;
+    }
 
-    container.innerHTML =
-        '<p style="color:#888;">Нет текущих записей</p>';
+    notes.forEach(note => {
 
-    return;
+        const card =
+            document.createElement("div");
+
+        card.className = "note-card";
+
+        const categoryName =
+            products[note.category].name;
+
+        card.innerHTML = `
+
+            <div class="note-category">
+                ${categoryName}
+            </div>
+
+            <div class="note-product">
+                ${note.product}
+            </div>
+
+            <div class="note-amount">
+                ${note.amount} г
+            </div>
+
+            <button
+                class="complete-button"
+                onclick="completeNote(${note.id})"
+            >
+                ✓ Использовано
+            </button>
+
+        `;
+
+        container.appendChild(card);
+
+    });
 }
 
 
-/*
-   Перебираем все сохранённые записи.
-*/
+/* =====================================================
+   ЗАВЕРШЕНИЕ ЗАПИСИ
+===================================================== */
 
-notes.forEach(note => {
-
-    const card =
-        document.createElement("div");
-
-    card.className = "note-card";
-
-
-    /*
-       Получаем нормальное название категории.
-    */
-
-    const categoryName =
-        products[note.category].name;
-
-
-    /*
-       Создаём содержимое карточки.
-    */
-
-    card.innerHTML = `
-
-        <div class="note-category">
-            ${categoryName}
-        </div>
-
-        <div class="note-product">
-            ${note.product}
-        </div>
-
-        <div class="note-amount">
-            ${note.amount} г
-        </div>
-
-        <button
-            class="complete-button"
-            onclick="completeNote(${note.id})"
-        >
-            ✓ Использовано
-        </button>
-
-    `;
-
-
-    container.appendChild(card);
-
-});
-}
-/* ===================================================== УДАЛЕНИЕ / ЗАВЕРШЕНИЕ ЗАПИСИ ===================================================== */
 function completeNote(id) {
-/*
-   Оставляем все записи,
-   кроме той, которую использовали.
-*/
 
-notes = notes.filter(
-    note => note.id !== id
-);
+    notes = notes.filter(
+        note => note.id !== id
+    );
 
+    localStorage.setItem(
+        "refillNotes",
+        JSON.stringify(notes)
+    );
 
-// Обновляем localStorage
-localStorage.setItem(
-    "refillNotes",
-    JSON.stringify(notes)
-);
-
-
-// Обновляем экран
-renderNotes();
+    renderNotes();
 }
-/* ===================================================== ВОЗВРАТ К КАТЕГОРИЯМ ===================================================== */
+
+
+/* =====================================================
+   ВОЗВРАТ К КАТЕГОРИЯМ
+===================================================== */
+
 function showCategories() {
-// Показываем категории
-document
-    .getElementById("categoriesScreen")
-    .classList.remove("hidden");
 
+    document
+        .getElementById("categoriesScreen")
+        .classList.remove("hidden");
 
-// Прячем список средств
-document
-    .getElementById("productsScreen")
-    .classList.add("hidden");
+    document
+        .getElementById("productsScreen")
+        .classList.add("hidden");
 
-
-// Прячем экран количества
-document
-    .getElementById("amountScreen")
-    .classList.add("hidden");
+    document
+        .getElementById("amountScreen")
+        .classList.add("hidden");
 }
 
-/* ===================================================== ВОЗВРАТ К СПИСКУ СРЕДСТВ ===================================================== */
+
+/* =====================================================
+   ВОЗВРАТ К СПИСКУ СРЕДСТВ
+===================================================== */
+
 function showProducts() {
-// Прячем экран количества
-document
-    .getElementById("amountScreen")
-    .classList.add("hidden");
 
+    document
+        .getElementById("amountScreen")
+        .classList.add("hidden");
 
-// Показываем средства
-document
-    .getElementById("productsScreen")
-    .classList.remove("hidden");
+    document
+        .getElementById("productsScreen")
+        .classList.remove("hidden");
 }
-/* ===================================================== ЗАПУСК ПРИЛОЖЕНИЯ ===================================================== */
-/* Эти функции запускаются, когда страница открывается. */
+
+
+/* =====================================================
+   ЗАПУСК ПРИЛОЖЕНИЯ
+===================================================== */
+
 renderCategories();
+
 renderNotes();
