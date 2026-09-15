@@ -1,9 +1,4 @@
-/* =====================================================
-   ДАННЫЕ ПРИЛОЖЕНИЯ
-===================================================== */
-
 const products = {
-
     dish: {
         name: "Посуда",
         items: [
@@ -59,30 +54,16 @@ const products = {
             "Мужской 2в1"
         ]
     }
-
 };
 
 
-/* =====================================================
-   ПЕРЕМЕННЫЕ
-===================================================== */
-
 let selectedCategory = null;
 let selectedProduct = null;
-
-
-/* =====================================================
-   СОХРАНЁННЫЕ ЗАПИСИ
-===================================================== */
 
 let notes = JSON.parse(
     localStorage.getItem("refillNotes")
 ) || [];
 
-
-/* =====================================================
-   ПОКАЗЫВАЕМ КАТЕГОРИИ
-===================================================== */
 
 function renderCategories() {
 
@@ -90,29 +71,22 @@ function renderCategories() {
 
     container.innerHTML = "";
 
-    Object.entries(products).forEach(
-        ([key, category]) => {
+    Object.entries(products).forEach(([key, category]) => {
 
-            const button = document.createElement("button");
+        const button = document.createElement("button");
 
-            button.className = "category-button";
+        button.className = "category-button";
 
-            button.textContent = category.name;
+        button.textContent = category.name;
 
-            button.onclick = function () {
-                showProducts(key);
-            };
+        button.addEventListener("click", () => {
+            showProducts(key);
+        });
 
-            container.appendChild(button);
-
-        }
-    );
+        container.appendChild(button);
+    });
 }
 
-
-/* =====================================================
-   ОТКРЫВАЕМ СПИСОК СРЕДСТВ
-===================================================== */
 
 function showProducts(categoryKey) {
 
@@ -120,9 +94,8 @@ function showProducts(categoryKey) {
 
     const category = products[categoryKey];
 
-    document.getElementById(
-        "categoryTitle"
-    ).textContent = category.name;
+    document.getElementById("categoryTitle").textContent =
+        category.name;
 
     const container = document.getElementById("products");
 
@@ -136,12 +109,11 @@ function showProducts(categoryKey) {
 
         button.textContent = productName;
 
-        button.onclick = function () {
+        button.addEventListener("click", () => {
             selectProduct(productName);
-        };
+        });
 
         container.appendChild(button);
-
     });
 
     document
@@ -154,21 +126,14 @@ function showProducts(categoryKey) {
 }
 
 
-/* =====================================================
-   ВЫБИРАЕМ СРЕДСТВО
-===================================================== */
-
 function selectProduct(productName) {
 
     selectedProduct = productName;
 
-    document.getElementById(
-        "productTitle"
-    ).textContent = productName;
+    document.getElementById("productTitle").textContent =
+        productName;
 
-    document.getElementById(
-        "amountInput"
-    ).value = "";
+    document.getElementById("amountInput").value = "";
 
     document
         .getElementById("productsScreen")
@@ -177,29 +142,15 @@ function selectProduct(productName) {
     document
         .getElementById("amountScreen")
         .classList.remove("hidden");
-
-    document
-        .getElementById("amountInput")
-        .focus();
 }
 
-
-/* =====================================================
-   БЫСТРАЯ КНОПКА КОЛИЧЕСТВА
-===================================================== */
 
 function setAmount(amount) {
 
-    document.getElementById(
-        "amountInput"
-    ).value = amount;
+    document.getElementById("amountInput").value = amount;
 
 }
 
-
-/* =====================================================
-   СОХРАНЕНИЕ ЗАПИСИ
-===================================================== */
 
 function saveNote() {
 
@@ -214,19 +165,12 @@ function saveNote() {
         return;
     }
 
-    const newNote = {
-
+    notes.push({
         id: Date.now(),
-
         category: selectedCategory,
-
         product: selectedProduct,
-
         amount: amount
-
-    };
-
-    notes.push(newNote);
+    });
 
     localStorage.setItem(
         "refillNotes",
@@ -242,14 +186,9 @@ function saveNote() {
 }
 
 
-/* =====================================================
-   ПОКАЗЫВАЕМ СОХРАНЁННЫЕ ЗАПИСИ
-===================================================== */
-
 function renderNotes() {
 
-    const container =
-        document.getElementById("notes");
+    const container = document.getElementById("notes");
 
     container.innerHTML = "";
 
@@ -263,18 +202,13 @@ function renderNotes() {
 
     notes.forEach(note => {
 
-        const card =
-            document.createElement("div");
+        const card = document.createElement("div");
 
         card.className = "note-card";
 
-        const categoryName =
-            products[note.category].name;
-
         card.innerHTML = `
-
             <div class="note-category">
-                ${categoryName}
+                ${products[note.category].name}
             </div>
 
             <div class="note-product">
@@ -291,24 +225,16 @@ function renderNotes() {
             >
                 ✓ Использовано
             </button>
-
         `;
 
         container.appendChild(card);
-
     });
 }
 
 
-/* =====================================================
-   ЗАВЕРШЕНИЕ ЗАПИСИ
-===================================================== */
-
 function completeNote(id) {
 
-    notes = notes.filter(
-        note => note.id !== id
-    );
+    notes = notes.filter(note => note.id !== id);
 
     localStorage.setItem(
         "refillNotes",
@@ -318,10 +244,6 @@ function completeNote(id) {
     renderNotes();
 }
 
-
-/* =====================================================
-   ВОЗВРАТ К КАТЕГОРИЯМ
-===================================================== */
 
 function showCategories() {
 
@@ -339,11 +261,7 @@ function showCategories() {
 }
 
 
-/* =====================================================
-   ВОЗВРАТ К СПИСКУ СРЕДСТВ
-===================================================== */
-
-function showProducts() {
+function showProductsBack() {
 
     document
         .getElementById("amountScreen")
@@ -355,10 +273,5 @@ function showProducts() {
 }
 
 
-/* =====================================================
-   ЗАПУСК ПРИЛОЖЕНИЯ
-===================================================== */
-
 renderCategories();
-
 renderNotes();
