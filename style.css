@@ -1,0 +1,209 @@
+/* ========================================= ОБЩИЕ НАСТРОЙКИ ========================================= */
+/* Убираем стандартные отступы браузера */
+*{ box-sizing: border-box; margin: 0; padding: 0; }
+/* Основные настройки страницы */ body { font-family: Arial, sans-serif;
+/* Светлый фон */
+background: #f4f5f3;
+
+/* Цвет текста */
+color: #222;
+
+/* Чтобы приложение занимало весь экран */
+min-height: 100vh;
+}
+/* ========================================= ОСНОВНОЙ КОНТЕЙНЕР ========================================= */
+.app { width: 100%; max-width: 600px;
+/* Центрируем на компьютере */
+margin: 0 auto;
+
+padding: 20px;
+}
+/* ========================================= ШАПКА ========================================= */
+.header { margin-bottom: 30px; }
+.header h1 { font-size: 32px; letter-spacing: 3px; }
+.header p { margin-top: 5px; color: #777; }
+/* ========================================= ЗАГОЛОВКИ ========================================= */
+h2 { font-size: 22px; margin-bottom: 18px; }
+/* ========================================= КНОПКИ КАТЕГОРИЙ ========================================= */
+.categories { display: grid;
+/* На телефоне две кнопки в ряд */
+grid-template-columns: repeat(2, 1fr);
+
+gap: 12px;
+}
+.category-button { border: none;
+background: white;
+
+border-radius: 16px;
+
+padding: 25px 12px;
+
+font-size: 17px;
+
+font-weight: bold;
+
+cursor: pointer;
+
+/* Тень */
+box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+/* Анимация */
+transition: 0.15s;
+}
+/* Эффект при нажатии */ .category-button:active { transform: scale(0.96); }
+/* ========================================= СПИСОК СРЕДСТВ ========================================= */
+.products { display: flex;
+flex-direction: column;
+
+gap: 10px;
+}
+.product-button { width: 100%;
+border: none;
+
+background: white;
+
+border-radius: 14px;
+
+padding: 18px;
+
+text-align: left;
+
+font-size: 17px;
+
+cursor: pointer;
+
+box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+.product-button:active { transform: scale(0.98); }
+/* ========================================= КНОПКА НАЗАД ========================================= */
+.back-button { border: none;
+background: transparent;
+
+font-size: 16px;
+
+margin-bottom: 20px;
+
+cursor: pointer;
+}
+/* ========================================= ПОЛЕ КОЛИЧЕСТВА ========================================= */
+.amount-label { color: #777;
+margin-bottom: 8px;
+}
+.amount-input-wrapper { display: flex;
+align-items: center;
+
+background: white;
+
+border-radius: 16px;
+
+padding: 10px 18px;
+
+margin-bottom: 20px;
+}
+.amount-input-wrapper input { width: 100%;
+border: none;
+
+outline: none;
+
+font-size: 32px;
+
+text-align: center;
+}
+.amount-input-wrapper span { font-size: 20px;
+color: #777;
+}
+/* ========================================= БЫСТРЫЕ ЗНАЧЕНИЯ ========================================= */
+.quick-amounts { display: grid;
+grid-template-columns: repeat(2, 1fr);
+
+gap: 10px;
+
+margin-bottom: 20px;
+}
+.quick-amounts button { border: none;
+background: white;
+
+border-radius: 12px;
+
+padding: 15px;
+
+font-size: 16px;
+
+cursor: pointer;
+}
+/* ========================================= КНОПКА СОХРАНЕНИЯ ========================================= */
+.save-button { width: 100%;
+border: none;
+
+border-radius: 14px;
+
+padding: 18px;
+
+font-size: 17px;
+
+font-weight: bold;
+
+cursor: pointer;
+
+background: #222;
+
+color: white;
+}
+.save-button:active { transform: scale(0.98); }
+/* ========================================= ТЕКУЩИЕ ЗАПИСИ ========================================= */
+.notes-section { margin-top: 40px;
+padding-top: 25px;
+
+border-top: 1px solid #ddd;
+}
+.note-card { background: white;
+border-radius: 16px;
+
+padding: 18px;
+
+margin-bottom: 12px;
+
+box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+.note-category { font-size: 13px;
+color: #888;
+
+margin-bottom: 6px;
+}
+.note-product { font-size: 18px;
+font-weight: bold;
+
+margin-bottom: 5px;
+}
+.note-amount { font-size: 16px;
+color: #555;
+
+margin-bottom: 15px;
+}
+.complete-button { width: 100%;
+border: none;
+
+background: #eee;
+
+border-radius: 10px;
+
+padding: 12px;
+
+font-size: 15px;
+
+cursor: pointer;
+}
+/* ========================================= СКРЫТИЕ ЭКРАНОВ ========================================= */
+.hidden { display: none; }
+/* ========================================= МОБИЛЬНАЯ АДАПТАЦИЯ ========================================= */
+@media (max-width: 400px) {
+.app {
+    padding: 15px;
+}
+
+.category-button {
+    padding: 22px 8px;
+
+    font-size: 15px;
+}
+}
