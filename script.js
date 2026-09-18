@@ -162,62 +162,42 @@ function renderCategories() {
 ===================================================== */
 
 function showProducts(categoryKey) {
+    alert("Нажата категория: " + categoryKey);
 
-    const category = products[categoryKey];
+const category = products[categoryKey];
 
-    if (!category) {
-        console.error(
-            "Категория не найдена:",
-            categoryKey
-        );
-        return;
-    }
+alert("Категория: " + category.name);
 
-    selectedCategory = categoryKey;
+selectedCategory = categoryKey;
 
-    document.getElementById(
-        "categoryTitle"
-    ).textContent = category.name;
+document.getElementById("categoryTitle").textContent =
+    category.name;
 
-    const container =
-        document.getElementById("products");
+const container = document.getElementById("products");
 
-    container.innerHTML = "";
+container.innerHTML = "";
 
-    category.items.forEach(
-        productName => {
+category.items.forEach(function(productName) {
 
-            const button =
-                document.createElement("button");
+    const button = document.createElement("button");
 
-            button.className = "product-button";
+    button.className = "product-button";
 
-            button.textContent = productName;
+    button.textContent = productName;
 
-            button.addEventListener(
-                "click",
-                function () {
-                    selectProduct(productName);
-                }
-            );
+    button.onclick = function() {
+        selectProduct(productName);
+    };
 
-            container.appendChild(button);
-        }
-    );
+    container.appendChild(button);
+});
 
-    document
-        .getElementById("categoriesScreen")
-        .classList.add("hidden");
+document.getElementById("categoriesScreen")
+    .classList.add("hidden");
 
-    document
-        .getElementById("productsScreen")
-        .classList.remove("hidden");
-
-    document
-        .getElementById("amountScreen")
-        .classList.add("hidden");
+document.getElementById("productsScreen")
+    .classList.remove("hidden");
 }
-
 
 /* =====================================================
    ВЫБОР СРЕДСТВА
