@@ -1,3 +1,4 @@
+alert("JAVASCRIPT ЗАГРУЗИЛСЯ")
 const products = {
     dish: {
         name: "Посуда",
