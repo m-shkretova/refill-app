@@ -1,5 +1,9 @@
-alert("JAVASCRIPT ЗАГРУЗИЛСЯ")
+/* =====================================================
+   ДАННЫЕ ПРИЛОЖЕНИЯ
+===================================================== */
+
 const products = {
+
     dish: {
         name: "Посуда",
         items: [
@@ -55,153 +59,103 @@ const products = {
             "Мужской 2в1"
         ]
     }
+
 };
 
 
 /* =====================================================
-   СОСТОЯНИЕ ПРИЛОЖЕНИЯ
+   ПЕРЕМЕННЫЕ
 ===================================================== */
 
 let selectedCategory = null;
 let selectedProduct = null;
-let notes = [];
 
 
 /* =====================================================
-   РАБОТА С СОХРАНЕНИЕМ
+   СОХРАНЁННЫЕ ЗАПИСИ
 ===================================================== */
 
-function loadNotes() {
-
-    try {
-
-        const saved = localStorage.getItem("refillNotes");
-
-        if (!saved) {
-            return [];
-        }
-
-        const parsed = JSON.parse(saved);
-
-        return Array.isArray(parsed) ? parsed : [];
-
-    } catch (error) {
-
-        console.error("Ошибка чтения записей:", error);
-
-        return [];
-    }
-}
-
-
-function saveNotes() {
-
-    try {
-
-        localStorage.setItem(
-            "refillNotes",
-            JSON.stringify(notes)
-        );
-
-        return true;
-
-    } catch (error) {
-
-        console.error("Ошибка сохранения:", error);
-
-        alert(
-            "Не удалось сохранить запись. " +
-            "Проверьте память браузера."
-        );
-
-        return false;
-    }
-}
+let notes = JSON.parse(
+    localStorage.getItem("refillNotes")
+) || [];
 
 
 /* =====================================================
-   КАТЕГОРИИ
+   ПОКАЗЫВАЕМ КАТЕГОРИИ
 ===================================================== */
 
 function renderCategories() {
 
-    const container =
-        document.getElementById("categories");
-
-    if (!container) {
-        console.error("Не найден блок categories");
-        return;
-    }
+    const container = document.getElementById("categories");
 
     container.innerHTML = "";
 
     Object.entries(products).forEach(
         ([key, category]) => {
 
-            const button =
-                document.createElement("button");
+            const button = document.createElement("button");
 
             button.className = "category-button";
 
             button.textContent = category.name;
 
-            button.addEventListener(
-                "click",
-                function () {
-                    showProducts(key);
-                }
-            );
+            button.onclick = function () {
+                showProducts(key);
+            };
 
             container.appendChild(button);
+
         }
     );
 }
 
 
 /* =====================================================
-   ТОВАРЫ КАТЕГОРИИ
+   ОТКРЫВАЕМ СПИСОК СРЕДСТВ
 ===================================================== */
 
 function showProducts(categoryKey) {
-    alert("Нажата категория: " + categoryKey);
 
-const category = products[categoryKey];
+    selectedCategory = categoryKey;
 
-alert("Категория: " + category.name);
+    const category = products[categoryKey];
 
-selectedCategory = categoryKey;
+    document.getElementById(
+        "categoryTitle"
+    ).textContent = category.name;
 
-document.getElementById("categoryTitle").textContent =
-    category.name;
+    const container = document.getElementById("products");
 
-const container = document.getElementById("products");
+    container.innerHTML = "";
 
-container.innerHTML = "";
+    category.items.forEach(productName => {
 
-category.items.forEach(function(productName) {
+        const button = document.createElement("button");
 
-    const button = document.createElement("button");
+        button.className = "product-button";
 
-    button.className = "product-button";
+        button.textContent = productName;
 
-    button.textContent = productName;
+        button.onclick = function () {
+            selectProduct(productName);
+        };
 
-    button.onclick = function() {
-        selectProduct(productName);
-    };
+        container.appendChild(button);
 
-    container.appendChild(button);
-});
+    });
 
-document.getElementById("categoriesScreen")
-    .classList.add("hidden");
+    document
+        .getElementById("categoriesScreen")
+        .classList.add("hidden");
 
-document.getElementById("productsScreen")
-    .classList.remove("hidden");
+    document
+        .getElementById("productsScreen")
+        .classList.remove("hidden");
 }
 
+
 /* =====================================================
-   ВЫБОР СРЕДСТВА
+   ВЫБИРАЕМ СРЕДСТВО
 ===================================================== */
 
 function selectProduct(productName) {
@@ -223,19 +177,23 @@ function selectProduct(productName) {
     document
         .getElementById("amountScreen")
         .classList.remove("hidden");
+
+    document
+        .getElementById("amountInput")
+        .focus();
 }
 
 
 /* =====================================================
-   БЫСТРОЕ КОЛИЧЕСТВО
+   БЫСТРАЯ КНОПКА КОЛИЧЕСТВА
 ===================================================== */
 
 function setAmount(amount) {
 
-    const input =
-        document.getElementById("amountInput");
+    document.getElementById(
+        "amountInput"
+    ).value = amount;
 
-    input.value = amount;
 }
 
 
@@ -245,42 +203,16 @@ function setAmount(amount) {
 
 function saveNote() {
 
-    const input =
-        document.getElementById("amountInput");
+    const amount = Number(
+        document.getElementById("amountInput").value
+    );
 
-    const amount = Number(input.value);
+    if (!amount || amount <= 0) {
 
-    /* Проверяем категорию */
-
-    if (!selectedCategory) {
-
-        alert("Сначала выберите категорию.");
+        alert("Введите количество в граммах");
 
         return;
     }
-
-    /* Проверяем средство */
-
-    if (!selectedProduct) {
-
-        alert("Сначала выберите средство.");
-
-        return;
-    }
-
-    /* Проверяем количество */
-
-    if (!Number.isFinite(amount) || amount <= 0) {
-
-        alert("Введите количество в граммах.");
-
-        input.focus();
-
-        return;
-    }
-
-
-    /* Создаём запись */
 
     const newNote = {
 
@@ -291,49 +223,27 @@ function saveNote() {
         product: selectedProduct,
 
         amount: amount
+
     };
-
-
-    /* Добавляем запись */
 
     notes.push(newNote);
 
-
-    /* Сохраняем */
-
-    const saved = saveNotes();
-
-
-    /* Если сохранить не удалось —
-       НЕ сбрасываем данные */
-
-    if (!saved) {
-
-        notes.pop();
-
-        return;
-    }
-
-
-    /* Обновляем список */
+    localStorage.setItem(
+        "refillNotes",
+        JSON.stringify(notes)
+    );
 
     renderNotes();
 
-
-    /* Очищаем выбор */
+    showCategories();
 
     selectedCategory = null;
     selectedProduct = null;
-
-
-    /* Возвращаемся на главный экран */
-
-    showCategories();
 }
 
 
 /* =====================================================
-   ОТОБРАЖЕНИЕ ЗАПИСЕЙ
+   ПОКАЗЫВАЕМ СОХРАНЁННЫЕ ЗАПИСИ
 ===================================================== */
 
 function renderNotes() {
@@ -341,12 +251,7 @@ function renderNotes() {
     const container =
         document.getElementById("notes");
 
-    if (!container) {
-        return;
-    }
-
     container.innerHTML = "";
-
 
     if (notes.length === 0) {
 
@@ -356,7 +261,6 @@ function renderNotes() {
         return;
     }
 
-
     notes.forEach(note => {
 
         const card =
@@ -364,18 +268,8 @@ function renderNotes() {
 
         card.className = "note-card";
 
-
-        const category =
-            products[note.category];
-
-
-        /* Защита от старых/повреждённых записей */
-
         const categoryName =
-            category
-                ? category.name
-                : "Неизвестная категория";
-
+            products[note.category].name;
 
         card.innerHTML = `
 
@@ -400,45 +294,33 @@ function renderNotes() {
 
         `;
 
-
         container.appendChild(card);
+
     });
 }
 
 
 /* =====================================================
-   ЗАПИСЬ ИСПОЛЬЗОВАНА
+   ЗАВЕРШЕНИЕ ЗАПИСИ
 ===================================================== */
 
 function completeNote(id) {
-
-    const oldNotes = [...notes];
-
 
     notes = notes.filter(
         note => note.id !== id
     );
 
-
-    if (!saveNotes()) {
-
-        /* Если сохранение не удалось —
-           возвращаем запись */
-
-        notes = oldNotes;
-
-        renderNotes();
-
-        return;
-    }
-
+    localStorage.setItem(
+        "refillNotes",
+        JSON.stringify(notes)
+    );
 
     renderNotes();
 }
 
 
 /* =====================================================
-   ГЛАВНЫЙ ЭКРАН
+   ВОЗВРАТ К КАТЕГОРИЯМ
 ===================================================== */
 
 function showCategories() {
@@ -458,10 +340,10 @@ function showCategories() {
 
 
 /* =====================================================
-   НАЗАД К ТОВАРАМ
+   ВОЗВРАТ К СПИСКУ СРЕДСТВ
 ===================================================== */
 
-function showProductsBack() {
+function showProducts() {
 
     document
         .getElementById("amountScreen")
@@ -474,23 +356,8 @@ function showProductsBack() {
 
 
 /* =====================================================
-   СОВМЕСТИМОСТЬ С КНОПКОЙ В HTML
+   ЗАПУСК ПРИЛОЖЕНИЯ
 ===================================================== */
-
-/* В index.html у тебя вызывается showProducts().
-   Поэтому оставляем эту функцию тоже. */
-
-function showProducts() {
-
-    showProductsBack();
-}
-
-
-/* =====================================================
-   ЗАПУСК
-===================================================== */
-
-notes = loadNotes();
 
 renderCategories();
 
