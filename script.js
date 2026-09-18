@@ -57,64 +57,153 @@ const products = {
 };
 
 
+/* =====================================================
+   СОСТОЯНИЕ ПРИЛОЖЕНИЯ
+===================================================== */
+
 let selectedCategory = null;
 let selectedProduct = null;
-
-let notes = JSON.parse(
-    localStorage.getItem("refillNotes")
-) || [];
+let notes = [];
 
 
-function renderCategories() {
+/* =====================================================
+   РАБОТА С СОХРАНЕНИЕМ
+===================================================== */
 
-    const container = document.getElementById("categories");
+function loadNotes() {
 
-    container.innerHTML = "";
+    try {
 
-    Object.entries(products).forEach(([key, category]) => {
+        const saved = localStorage.getItem("refillNotes");
 
-        const button = document.createElement("button");
+        if (!saved) {
+            return [];
+        }
 
-        button.className = "category-button";
+        const parsed = JSON.parse(saved);
 
-        button.textContent = category.name;
+        return Array.isArray(parsed) ? parsed : [];
 
-        button.addEventListener("click", () => {
-            showProducts(key);
-        });
+    } catch (error) {
 
-        container.appendChild(button);
-    });
+        console.error("Ошибка чтения записей:", error);
+
+        return [];
+    }
 }
 
 
-function showProducts(categoryKey) {
+function saveNotes() {
 
-    selectedCategory = categoryKey;
+    try {
 
-    const category = products[categoryKey];
+        localStorage.setItem(
+            "refillNotes",
+            JSON.stringify(notes)
+        );
 
-    document.getElementById("categoryTitle").textContent =
-        category.name;
+        return true;
 
-    const container = document.getElementById("products");
+    } catch (error) {
+
+        console.error("Ошибка сохранения:", error);
+
+        alert(
+            "Не удалось сохранить запись. " +
+            "Проверьте память браузера."
+        );
+
+        return false;
+    }
+}
+
+
+/* =====================================================
+   КАТЕГОРИИ
+===================================================== */
+
+function renderCategories() {
+
+    const container =
+        document.getElementById("categories");
+
+    if (!container) {
+        console.error("Не найден блок categories");
+        return;
+    }
 
     container.innerHTML = "";
 
-    category.items.forEach(productName => {
+    Object.entries(products).forEach(
+        ([key, category]) => {
 
-        const button = document.createElement("button");
+            const button =
+                document.createElement("button");
 
-        button.className = "product-button";
+            button.className = "category-button";
 
-        button.textContent = productName;
+            button.textContent = category.name;
 
-        button.addEventListener("click", () => {
-            selectProduct(productName);
-        });
+            button.addEventListener(
+                "click",
+                function () {
+                    showProducts(key);
+                }
+            );
 
-        container.appendChild(button);
-    });
+            container.appendChild(button);
+        }
+    );
+}
+
+
+/* =====================================================
+   ТОВАРЫ КАТЕГОРИИ
+===================================================== */
+
+function showProducts(categoryKey) {
+
+    const category = products[categoryKey];
+
+    if (!category) {
+        console.error(
+            "Категория не найдена:",
+            categoryKey
+        );
+        return;
+    }
+
+    selectedCategory = categoryKey;
+
+    document.getElementById(
+        "categoryTitle"
+    ).textContent = category.name;
+
+    const container =
+        document.getElementById("products");
+
+    container.innerHTML = "";
+
+    category.items.forEach(
+        productName => {
+
+            const button =
+                document.createElement("button");
+
+            button.className = "product-button";
+
+            button.textContent = productName;
+
+            button.addEventListener(
+                "click",
+                function () {
+                    selectProduct(productName);
+                }
+            );
+
+            container.appendChild(button);
+        }
+    );
 
     document
         .getElementById("categoriesScreen")
@@ -123,17 +212,28 @@ function showProducts(categoryKey) {
     document
         .getElementById("productsScreen")
         .classList.remove("hidden");
+
+    document
+        .getElementById("amountScreen")
+        .classList.add("hidden");
 }
 
+
+/* =====================================================
+   ВЫБОР СРЕДСТВА
+===================================================== */
 
 function selectProduct(productName) {
 
     selectedProduct = productName;
 
-    document.getElementById("productTitle").textContent =
-        productName;
+    document.getElementById(
+        "productTitle"
+    ).textContent = productName;
 
-    document.getElementById("amountInput").value = "";
+    document.getElementById(
+        "amountInput"
+    ).value = "";
 
     document
         .getElementById("productsScreen")
@@ -145,52 +245,127 @@ function selectProduct(productName) {
 }
 
 
+/* =====================================================
+   БЫСТРОЕ КОЛИЧЕСТВО
+===================================================== */
+
 function setAmount(amount) {
 
-    document.getElementById("amountInput").value = amount;
+    const input =
+        document.getElementById("amountInput");
 
+    input.value = amount;
 }
 
 
+/* =====================================================
+   СОХРАНЕНИЕ ЗАПИСИ
+===================================================== */
+
 function saveNote() {
 
-    const amount = Number(
-        document.getElementById("amountInput").value
-    );
+    const input =
+        document.getElementById("amountInput");
 
-    if (!amount || amount <= 0) {
+    const amount = Number(input.value);
 
-        alert("Введите количество в граммах");
+    /* Проверяем категорию */
+
+    if (!selectedCategory) {
+
+        alert("Сначала выберите категорию.");
 
         return;
     }
 
-    notes.push({
-        id: Date.now(),
-        category: selectedCategory,
-        product: selectedProduct,
-        amount: amount
-    });
+    /* Проверяем средство */
 
-    localStorage.setItem(
-        "refillNotes",
-        JSON.stringify(notes)
-    );
+    if (!selectedProduct) {
+
+        alert("Сначала выберите средство.");
+
+        return;
+    }
+
+    /* Проверяем количество */
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+
+        alert("Введите количество в граммах.");
+
+        input.focus();
+
+        return;
+    }
+
+
+    /* Создаём запись */
+
+    const newNote = {
+
+        id: Date.now(),
+
+        category: selectedCategory,
+
+        product: selectedProduct,
+
+        amount: amount
+    };
+
+
+    /* Добавляем запись */
+
+    notes.push(newNote);
+
+
+    /* Сохраняем */
+
+    const saved = saveNotes();
+
+
+    /* Если сохранить не удалось —
+       НЕ сбрасываем данные */
+
+    if (!saved) {
+
+        notes.pop();
+
+        return;
+    }
+
+
+    /* Обновляем список */
 
     renderNotes();
 
-    showCategories();
+
+    /* Очищаем выбор */
 
     selectedCategory = null;
     selectedProduct = null;
+
+
+    /* Возвращаемся на главный экран */
+
+    showCategories();
 }
 
 
+/* =====================================================
+   ОТОБРАЖЕНИЕ ЗАПИСЕЙ
+===================================================== */
+
 function renderNotes() {
 
-    const container = document.getElementById("notes");
+    const container =
+        document.getElementById("notes");
+
+    if (!container) {
+        return;
+    }
 
     container.innerHTML = "";
+
 
     if (notes.length === 0) {
 
@@ -200,15 +375,31 @@ function renderNotes() {
         return;
     }
 
+
     notes.forEach(note => {
 
-        const card = document.createElement("div");
+        const card =
+            document.createElement("div");
 
         card.className = "note-card";
 
+
+        const category =
+            products[note.category];
+
+
+        /* Защита от старых/повреждённых записей */
+
+        const categoryName =
+            category
+                ? category.name
+                : "Неизвестная категория";
+
+
         card.innerHTML = `
+
             <div class="note-category">
-                ${products[note.category].name}
+                ${categoryName}
             </div>
 
             <div class="note-product">
@@ -225,25 +416,49 @@ function renderNotes() {
             >
                 ✓ Использовано
             </button>
+
         `;
+
 
         container.appendChild(card);
     });
 }
 
 
+/* =====================================================
+   ЗАПИСЬ ИСПОЛЬЗОВАНА
+===================================================== */
+
 function completeNote(id) {
 
-    notes = notes.filter(note => note.id !== id);
+    const oldNotes = [...notes];
 
-    localStorage.setItem(
-        "refillNotes",
-        JSON.stringify(notes)
+
+    notes = notes.filter(
+        note => note.id !== id
     );
+
+
+    if (!saveNotes()) {
+
+        /* Если сохранение не удалось —
+           возвращаем запись */
+
+        notes = oldNotes;
+
+        renderNotes();
+
+        return;
+    }
+
 
     renderNotes();
 }
 
+
+/* =====================================================
+   ГЛАВНЫЙ ЭКРАН
+===================================================== */
 
 function showCategories() {
 
@@ -261,6 +476,10 @@ function showCategories() {
 }
 
 
+/* =====================================================
+   НАЗАД К ТОВАРАМ
+===================================================== */
+
 function showProductsBack() {
 
     document
@@ -273,5 +492,25 @@ function showProductsBack() {
 }
 
 
+/* =====================================================
+   СОВМЕСТИМОСТЬ С КНОПКОЙ В HTML
+===================================================== */
+
+/* В index.html у тебя вызывается showProducts().
+   Поэтому оставляем эту функцию тоже. */
+
+function showProducts() {
+
+    showProductsBack();
+}
+
+
+/* =====================================================
+   ЗАПУСК
+===================================================== */
+
+notes = loadNotes();
+
 renderCategories();
+
 renderNotes();
