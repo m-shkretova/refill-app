@@ -1,134 +1,81 @@
-<!-- для нормальной работы на телефонах -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <title>Refill Notes</title>
+    <link rel="stylesheet" href="style.css?v=4">
+</head>
 
-<!-- Название вкладки браузера -->
-<title>Refill Notes</title>
+<body>
+    <div class="app">
 
-<!-- Подключаем  стили -->
-<link rel="stylesheet" href="style.css">
+        <header class="header">
+            <h1>REFILL</h1>
+            <p>Рабочие записи</p>
+        </header>
 
-<!-- Основной контейнер приложения -->
-<div class="app">
+        <!-- Экран категорий -->
+        <main id="categoriesScreen">
+            <h2>Выберите категорию</h2>
+            <div id="categories" class="categories"></div>
+        </main>
 
-    <!-- Заголовок -->
-    <header class="header">
-        <h1>REFILL</h1>
-        <p>Рабочие записи</p>
-    </header>
-
-
-    <!-- ========================= -->
-    <!-- ЭКРАН КАТЕГОРИЙ -->
-    <!-- ========================= -->
-
-    <main id="categoriesScreen">
-
-        <h2>Выберите категорию</h2>
-
-        <!-- Сюда JavaScript автоматически добавит категории -->
-        <div id="categories" class="categories"></div>
-
-    </main>
-
-
-    <!-- ========================= -->
-    <!-- ЭКРАН ВЫБОРА СРЕДСТВА -->
-    <!-- ========================= -->
-
-    <main id="productsScreen" class="hidden">
-
-        <!-- Кнопка назад -->
-        <button class="back-button" onclick="showCategories()">
-            ← Назад
-        </button>
-
-        <!-- Название выбранной категории -->
-        <h2 id="categoryTitle"></h2>
-
-        <!-- Сюда JavaScript добавит средства -->
-        <div id="products" class="products"></div>
-
-    </main>
-
-
-    <!-- ========================= -->
-    <!-- ЭКРАН ВВОДА КОЛИЧЕСТВА -->
-    <!-- ========================= -->
-
-    <main id="amountScreen" class="hidden">
-
-        <button class="back-button" onclick="showProducts()">
-            ← Назад
-        </button>
-
-        <!-- Название выбранного средства -->
-        <h2 id="productTitle"></h2>
-
-        <p class="amount-label">
-            Количество:
-        </p>
-
-        <!-- Поле ввода граммов -->
-        <div class="amount-input-wrapper">
-
-            <input
-                id="amountInput"
-                type="number"
-                inputmode="numeric"
-                min="1"
-                placeholder="0"
-            >
-
-            <span>г</span>
-
-        </div>
-
-
-        <!-- Быстрые кнопки -->
-        <div class="quick-amounts">
-
-            <button onclick="setAmount(250)">
-                250 г
+        <!-- Экран выбора средства -->
+        <main id="productsScreen" class="hidden">
+            <button type="button" class="back-button"
+                    onclick="showCategories()">
+                ← Назад
             </button>
 
-            <button onclick="setAmount(500)">
-                500 г
+            <h2 id="categoryTitle"></h2>
+            <div id="products" class="products"></div>
+        </main>
+
+        <!-- Экран ввода количества -->
+        <main id="amountScreen" class="hidden">
+            <button type="button" class="back-button"
+                    onclick="showProducts()">
+                ← Назад
             </button>
 
-            <button onclick="setAmount(750)">
-                750 г
+            <h2 id="productTitle"></h2>
+
+            <p class="amount-label">Количество:</p>
+
+            <div class="amount-input-wrapper">
+                <input
+                    id="amountInput"
+                    type="number"
+                    inputmode="numeric"
+                    min="1"
+                    placeholder="0"
+                >
+                <span>г</span>
+            </div>
+
+            <div class="quick-amounts">
+                <button type="button" onclick="setAmount(250)">250 г</button>
+                <button type="button" onclick="setAmount(500)">500 г</button>
+                <button type="button" onclick="setAmount(750)">750 г</button>
+                <button type="button" onclick="setAmount(1000)">1000 г</button>
+            </div>
+
+            <button type="button" class="save-button"
+                    onclick="saveNote()">
+                СОХРАНИТЬ
             </button>
+        </main>
 
-            <button onclick="setAmount(1000)">
-                1000 г
-            </button>
+        <!-- Текущие записи -->
+        <section class="notes-section">
+            <h2>Текущие записи</h2>
+            <div id="notes"></div>
+        </section>
 
-        </div>
+    </div>
 
-
-        <!-- Сохранение записи -->
-        <button class="save-button" onclick="saveNote()">
-            СОХРАНИТЬ
-        </button>
-
-    </main>
-
-
-    <!-- ========================= -->
-    <!-- СОХРАНЁННЫЕ ЗАПИСИ -->
-    <!-- ========================= -->
-
-    <section class="notes-section">
-
-        <h2>Текущие записи</h2>
-
-        <!-- Сюда JavaScript будет выводить карточки -->
-        <div id="notes"></div>
-
-    </section>
-
-</div>
-
-
-<!-- Подключаем JavaScript -->
-<script src="script.js"></script>
+    <script src="script.js?v=4"></script>
+</body>
+</html>
